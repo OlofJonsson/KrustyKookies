@@ -83,9 +83,9 @@ public class Controller {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (validateInput()) {
-				int selectA = view.getSelectedAction();
+				int selectedAction = view.getSelectedAction();
 				String searchingText = view.getSearchingText();
-				switch (selectA) {
+				switch (selectedAction) {
 				case KrustyView.SEARCH_FOR_PALLET:
 					searchForPallets(searchingText, view.getFromDate(), view.getToDate());
 					break;

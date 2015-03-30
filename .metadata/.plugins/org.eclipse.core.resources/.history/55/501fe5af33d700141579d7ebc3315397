@@ -18,6 +18,7 @@ import se.datadosen.component.RiverLayout;
 
 public class KrustyView extends JFrame {
 
+	private static final long serialVersionUID = -7322546617726420651L;
 	private JFrame content;
 	private JTextField inputText, fromDate, toDate;
 	private JButton searchButton, blockedTrue, blockedFalse;
@@ -37,13 +38,13 @@ public class KrustyView extends JFrame {
 		content.add(searchTerm);
 		this.inputText = new JTextField("", 20);
 		content.add("left", inputText);
-		JLabel fromDateJLabel = new JLabel("From date: ");
-		content.add(fromDateJLabel);
+		JLabel fromDateLabel = new JLabel("From date: ");
+		content.add(fromDateLabel);
 		this.fromDate = new JTextField("", 6);
 		content.add(fromDate);
 
-		JLabel toDateJLabel = new JLabel("To date: ");
-		content.add(toDateJLabel);
+		JLabel toDateLabel = new JLabel("To date: ");
+		content.add(toDateLabel);
 		this.toDate = new JTextField("", 6);
 		content.add(toDate);
 

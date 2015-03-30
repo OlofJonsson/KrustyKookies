@@ -83,9 +83,9 @@ public class Controller {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (validateInput()) {
-				int selectA = view.getSelectedAction();
+				int selectedAction = view.getSelectedAction();
 				String searchingText = view.getSearchingText();
-				switch (selectA) {
+				switch (selectedAction) {
 				case KrustyView.SEARCH_FOR_PALLET:
 					searchForPallets(searchingText, view.getFromDate(), view.getToDate());
 					break;
@@ -116,34 +116,34 @@ public class Controller {
 		}
 	}
 	
-	private void searchForPallets(String searchingText, String fromDate, String toDate) {
+	private void searchForPallets(String searchText, String fromDate, String toDate) {
 		//Search for pallet with id
-		if(fromDate.length() == 0 && toDate.length() == 0 && searchingText.length() == 0) {
+		if(fromDate.length() == 0 && toDate.length() == 0 && searchText.length() == 0) {
 			view.showErrorDialog("Please fill all input fields.");
 		}else if(toDate.length() == 0 && fromDate.length() == 0) {	
 			//Search for id
 			try {
-				long palletId = Long.parseLong(searchingText);
+				long palletId = Long.parseLong(searchText);
 				Pallet result = model.searchForPallet(palletId);
 				ArrayList<Pallet> list = new ArrayList<Pallet>();
 				list.add(result);
 				produceOutputForPallets(list, "found");
 			} catch (NumberFormatException e ) {
 				//Search for recipe
-				ArrayList<Pallet> pallets = model.searchForPallet(searchingText);
+				ArrayList<Pallet> pallets = model.searchForPallet(searchText);
 				produceOutputForPallets(pallets, "found");
 			}
 			return;
 			//Search for pallets produced during a specific time interval
-		} else if(searchingText.length() == 0 && toDate.length() != 0 && fromDate.length() != 0) {
+		} else if(searchText.length() == 0 && toDate.length() != 0 && fromDate.length() != 0) {
 			if(validateDates()) {
 				ArrayList<Pallet> pallets = model.searchForPallet(formatDate(fromDate), formatDate(toDate));
 				produceOutputForPallets(pallets, "found");
 			}
 			//Search for a specific product (recipe) produced during a specific time interval
-		} else if(searchingText.length() != 0 && toDate.length() != 0 && fromDate.length() != 0 ) {
+		} else if(searchText.length() != 0 && toDate.length() != 0 && fromDate.length() != 0 ) {
 			if(validateDates()) {
-				ArrayList<Pallet> pallets = model.searchForPallet(searchingText, formatDate(fromDate), formatDate(toDate));
+				ArrayList<Pallet> pallets = model.searchForPallet(searchText, formatDate(fromDate), formatDate(toDate));
 				produceOutputForPallets(pallets, "found");
 			}
 		} else if(toDate.length() != 0 || fromDate.length() != 0) {

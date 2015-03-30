@@ -42,8 +42,8 @@ public class KrustyView extends JFrame {
 		this.fromDate = new JTextField("", 6);
 		content.add(fromDate);
 
-		JLabel toDateJLabel = new JLabel("To date: ");
-		content.add(toDateJLabel);
+		JLabel toDateLabel = new JLabel("To date: ");
+		content.add(toDateLabel);
 		this.toDate = new JTextField("", 6);
 		content.add(toDate);
 
