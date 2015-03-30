@@ -154,17 +154,17 @@ INSERT into customers VALUES ('Gästkakor AB', 'Hässleholm');
 INSERT into customers VALUES ('Skånekakor AB', 'Perstorp');
 
 -- Orders
-INSERT INTO Orders VALUES (1, '2013-04-15', 'Finkakor AB' );
+INSERT INTO Orders VALUES (1, '2015-03-15', 'Finkakor AB' );
 Insert INTO Pallets VALUES (1, 1, NULL, 'Nut ring', NULL, FALSE);
 
-INSERT INTO Orders VALUES (2, '2013-04-16', 'Småbröd AB' );
+INSERT INTO Orders VALUES (2, '2015-03-16', 'Småbröd AB' );
 Insert INTO Pallets VALUES (2, 2, NULL, 'Amneris', NULL, FALSE);
 
-INSERT INTO Orders VALUES (3, '2013-05-06', 'Kaffebröd AB' );
+INSERT INTO Orders VALUES (3, '2015-05-06', 'Kaffebröd AB' );
 Insert INTO Pallets VALUES (3, 3, NULL, 'Nut cookie', NULL, FALSE);
 
-INSERT INTO Orders VALUES (4, '2013-05-07', 'Bjudkakor AB' );
+INSERT INTO Orders VALUES (4, '2015-05-07', 'Bjudkakor AB' );
 Insert INTO Pallets VALUES (4, 4, NULL, 'Tango', NULL, FALSE);
 
-INSERT INTO Orders VALUES (5, '2013-05-01', 'Kalaskakor AB' );
+INSERT INTO Orders VALUES (5, '2015-05-01', 'Kalaskakor AB' );
 Insert INTO Pallets VALUES (5, 5, NULL, 'Berliner', NULL, FALSE);
