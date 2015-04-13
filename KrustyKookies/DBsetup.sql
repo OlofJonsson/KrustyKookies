@@ -168,3 +168,5 @@ Insert INTO Pallets VALUES (4, 4, NULL, 'Tango', NULL, FALSE);
 
 INSERT INTO Orders VALUES (5, '2015-05-01', 'Kalaskakor AB' );
 Insert INTO Pallets VALUES (5, 5, NULL, 'Berliner', NULL, FALSE);
+
+INSERT INTO Orders VALUES (6, '2015-05-01', 'Partykakor AB' );

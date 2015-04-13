@@ -322,6 +322,102 @@ public class Model {
 		
 		return rtn;
 	}
+	
+	public int addPallet(int orderId, String recipeName ){
+		String sql = "Insert INTO Pallets(orderId, creationDateAndTime, recipeName, shipmentId, isBlocked)"
+				+ " VALUES (?, NULL, ?, NULL, FALSE)";
+		
+		
+		
+		PreparedStatement ps = null;
+		int rtn = 0;
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setLong(1, orderId);
+			ps.setString(2, recipeName);
+			rtn = ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(ps != null) ps.close();
+			} catch(SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return rtn;
+	}
+	
+	public boolean checkRecipe(String recipeName) {
+		String sql = 
+				"Select count(*) "+
+				"from Recipes "+
+				"where name like ?";
+
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, recipeName);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int result = 0;
+		try {
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					result = rs.getInt(1);
+				}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				if(ps != null)
+					try {
+						ps.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		return result > 0;
+	}
+	
+	public boolean checkOrderId(int orderId) {
+		String sql = 
+				"Select count(*) "+
+				"from Orders "+
+				"where id like ?";
+
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setLong(1, orderId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int result = 0;
+		try {
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					result = rs.getInt(1);
+				}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				if(ps != null)
+					try {
+						ps.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		return result > 0;
+	}
 
 	/**
 	 * Must be able to check how many pallets of a product have been produced
@@ -532,4 +628,6 @@ public class Model {
 			}
 		return pallets;
 	}
+
+	
 }

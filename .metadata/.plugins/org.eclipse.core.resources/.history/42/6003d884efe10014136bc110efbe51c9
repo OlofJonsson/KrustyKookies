@@ -1,0 +1,219 @@
+package controller;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import view.KrustyView;
+import model.Customer;
+import model.Model;
+import model.Pallet;
+import model.Recipe;
+
+public class Controller {
+
+	private KrustyView view;
+	private Model model;
+
+	public Controller(Model model, KrustyView view) {
+		this.view = view;
+		this.model = model;
+		view.addSearchListener(new SearchListener());
+		view.addBlockedButtonListener(new BlockedListener());
+		view.addNotBlockedButtonListener(new UnBlockedListener());
+		view.addProduceListener(new ProducedListener());
+	}
+
+	private boolean validateDates() {
+		Date fromDate = formatDate(view.getFromDate());
+		Date toDate = formatDate(view.getToDate());
+		if (fromDate == null || toDate == null) {
+			view.showErrorDialog("Invalid date, should have the format: YYYY-MM-DD and be within bounds.");
+			return false;
+		} else if (fromDate.getTime() > toDate.getTime()) {
+			view.showErrorDialog("Dates wrong order");
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validateInput() {
+		if (view.getSelectedAction() == KrustyView.SEARCH_FOR_PALLET || checkInputBoxes()) {
+			return true;
+		} else {
+			view.showErrorDialog("Please fill all input fields.");
+			return false;
+		}
+	}
+
+	private boolean checkInputBoxes() {
+		String searchingText = view.getSearchingText().trim();
+		if (view.getSelectedAction() == KrustyView.SEARCH_FOR_PALLET) {
+			return searchingText.length() != 0;
+		} else {
+			String fromDate = view.getFromDate().trim();
+			String toDate = view.getToDate().trim();
+			return !(toDate.length() == 0 || searchingText.length() == 0 || fromDate.length() == 0);
+		}
+	}
+
+	private Date formatDate(String date) {
+		String[] dateSplit = date.split("-");
+		if (dateSplit.length == 3) {
+			try {
+				Calendar cale = Calendar.getInstance();
+				cale.setLenient(false);
+				cale.set(Calendar.YEAR, Integer.parseInt(dateSplit[0]));
+				cale.set(Calendar.MONTH, Integer.parseInt(dateSplit[1]) - 1);
+				cale.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateSplit[2]));
+				Date dateRepresent = new Date(cale.getTimeInMillis());
+				return dateRepresent;
+			} catch (NumberFormatException e) {
+				return null;
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return null;
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	class SearchListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (validateInput()) {
+				int selectA = view.getSelectedAction();
+				String searchingText = view.getSearchingText();
+				switch (selectA) {
+				case KrustyView.SEARCH_FOR_PALLET:
+					searchForPallets(searchingText, view.getFromDate(), view.getToDate());
+					break;
+				case KrustyView.BLOCK_PALLET:
+					if (validateDates()) {
+						int numBlocked=  model.blockPallets(searchingText,
+								formatDate(view.getFromDate()),
+								formatDate(view.getToDate()));
+						view.updateSearchBox(String.format("Blocked %d pallets", numBlocked));
+						
+					}
+					break;
+				case KrustyView.SEARCH_QUANTITY:
+					if (validateDates()) {
+						int quantityResult = model.checkQuantity(searchingText,
+								formatDate(view.getFromDate()),
+								formatDate(view.getToDate()));
+						view.updateSearchBox(Integer.toString(quantityResult)
+								+ " pallets of "
+								+ searchingText
+								+ " has been produced during the time period between "
+								+ view.getFromDate() + " and "
+								+ view.getToDate());
+					}
+					break;
+					
+				}
+			}
+		}
+	}
+	
+	private void searchForPallets(String searchingText, String fromDate, String toDate) {
+		//Search for pallet with id
+		if(fromDate.length() == 0 && toDate.length() == 0 && searchingText.length() == 0) {
+			view.showErrorDialog("Please fill all input fields.");
+		}else if(toDate.length() == 0 && fromDate.length() == 0) {	
+			//Search for id
+			try {
+				long palletId = Long.parseLong(searchingText);
+				Pallet result = model.searchForPallet(palletId);
+				ArrayList<Pallet> list = new ArrayList<Pallet>();
+				list.add(result);
+				produceOutputForPallets(list, "found");
+			} catch (NumberFormatException e ) {
+				//Search for recipe
+				ArrayList<Pallet> pallets = model.searchForPallet(searchingText);
+				produceOutputForPallets(pallets, "found");
+			}
+			return;
+			//Search for pallets produced during a specific time interval
+		} else if(searchingText.length() == 0 && toDate.length() != 0 && fromDate.length() != 0) {
+			if(validateDates()) {
+				ArrayList<Pallet> pallets = model.searchForPallet(formatDate(fromDate), formatDate(toDate));
+				produceOutputForPallets(pallets, "found");
+			}
+			//Search for a specific product (recipe) produced during a specific time interval
+		} else if(searchingText.length() != 0 && toDate.length() != 0 && fromDate.length() != 0 ) {
+			if(validateDates()) {
+				ArrayList<Pallet> pallets = model.searchForPallet(searchingText, formatDate(fromDate), formatDate(toDate));
+				produceOutputForPallets(pallets, "found");
+			}
+		} else if(toDate.length() != 0 || fromDate.length() != 0) {
+			validateDates();
+		} else {
+			view.showErrorDialog("Error");
+		}
+	}
+	
+	private void produceOutputForPallets(ArrayList<Pallet> pallets, String action) {
+		if(!pallets.isEmpty()) {
+			String resultString = "";
+			for(Pallet p : pallets)
+				resultString += produceOutputForPallet(p, action);
+			view.updateSearchBox(resultString);
+		} else {
+			view.updateSearchBox("Nothing " + action);
+		}
+	}
+	
+	private String produceOutputForPallet(Pallet pallet, String action) {
+		String result;
+		if(pallet != null) {
+			result = "Pallet with id: " + Long.toString(pallet.id) + " " + action + "\n";
+			Customer c = model.getCustomerForPallet(pallet);
+			Recipe r = model.getRecipeForPallet(pallet);
+			String rName = r != null ? r.name : "null";
+			result += "Product: " + rName + '\n';
+			result += "Blocked: " + pallet.isBlocked + '\n';
+			String customerName = c != null ? c.name : "null";
+			String customerAddress = c != null ? c.address : "null";
+			result += "Customer name: " + customerName + '\n';
+			result += "Address: " + customerAddress + "\n\n";
+		} else {
+			result = "Nothing found";
+		}
+		return result;
+	}	
+	
+	class BlockedListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			ArrayList<Pallet> pallets = model.getPalletsWithBlockStatus(true);
+			produceOutputForPallets(pallets, "found");
+		}
+		
+	}
+	
+	class UnBlockedListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Pallet> pallets = model.getPalletsWithBlockStatus(false);
+			produceOutputForPallets(pallets, "found");
+		}
+		
+	}
+	
+	class ProducedListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int OrderId = Integer.parseInt(view.getOrderId());
+			String recipeName = view.getRecipeName();
+			if(model.checkRecipe())
+			model.addPallet(OrderId, recipeName);
+		}
+		
+	}
+}

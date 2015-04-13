@@ -22,6 +22,7 @@ public class Controller {
 		view.addSearchListener(new SearchListener());
 		view.addBlockedButtonListener(new BlockedListener());
 		view.addNotBlockedButtonListener(new UnBlockedListener());
+		view.addProduceListener(new ProducedListener());
 	}
 
 	private boolean validateDates() {
@@ -111,6 +112,7 @@ public class Controller {
 								+ view.getToDate());
 					}
 					break;
+					
 				}
 			}
 		}
@@ -199,6 +201,27 @@ public class Controller {
 		public void actionPerformed(ActionEvent e) {
 			ArrayList<Pallet> pallets = model.getPalletsWithBlockStatus(false);
 			produceOutputForPallets(pallets, "found");
+		}
+		
+	}
+	
+	class ProducedListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int OrderId = Integer.parseInt(view.getOrderId());
+			String recipeName = view.getRecipeName();
+			if(model.checkOrderId(OrderId)){
+				if(model.checkRecipe(recipeName)){
+					model.addPallet(OrderId, recipeName);
+				}
+				else{
+					view.showErrorDialog("Invalid Recipe");
+				}
+			}
+			else{
+				view.showErrorDialog("Invalid OrderId");
+			}
 		}
 		
 	}

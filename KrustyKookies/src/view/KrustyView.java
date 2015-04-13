@@ -19,11 +19,11 @@ import se.datadosen.component.RiverLayout;
 public class KrustyView extends JFrame {
 
 	private JFrame content;
-	private JTextField inputText, fromDate, toDate;
-	private JButton searchButton, blockedTrue, blockedFalse;
+	private JTextField inputText, fromDate, toDate, input, orderInput, recipeInput;
+	private JButton searchButton, blockedTrue, blockedFalse, produceButton;
 	private JTextArea searchOutput, productionOutput;
 	private String[] searchDescription = { "Search for pallet",
-			"Block pallets", "Search quantity"};
+			"Block pallets", "Search quantity", "Produce Pallet" };
 	private JComboBox searchCombo = new JComboBox();
 
 	public static final int SEARCH_FOR_PALLET = 0;
@@ -54,6 +54,24 @@ public class KrustyView extends JFrame {
 		this.searchButton = new JButton("Search");
 		content.add("tab", searchButton);
 		
+		// new
+		
+		JLabel orderIdJLabel = new JLabel("Order id: ");
+		content.add("p", orderIdJLabel);
+		this.orderInput = new JTextField("6", 4);
+		content.add(orderInput);
+		
+		JLabel recipeNameJLabel = new JLabel("Recipe Name: ");
+		content.add("", recipeNameJLabel);
+		this.recipeInput = new JTextField("Berliner", 20);
+		content.add(recipeInput);
+		
+		this.produceButton = new JButton("Produce");
+		content.add(produceButton);
+		 
+		 
+		
+		// new
 		GridLayout outputLayout = new GridLayout(0, 2);
 		outputLayout.setHgap(10);
 		JPanel outputPanel = new JPanel(outputLayout);
@@ -105,6 +123,10 @@ public class KrustyView extends JFrame {
 		searchButton.addActionListener(actionListener);
 	}
 	
+	public void addProduceListener(ActionListener actionListener) {
+		produceButton.addActionListener(actionListener);
+	}
+	
 	public void addBlockedButtonListener(ActionListener actionListener) {
 		blockedTrue.addActionListener(actionListener);
 	}
@@ -127,6 +149,14 @@ public class KrustyView extends JFrame {
 
 	public String getToDate() {
 		return toDate.getText().trim();
+	}
+	
+	public String getOrderId() {
+		return orderInput.getText().trim();
+	}
+	
+	public String getRecipeName() {
+		return recipeInput.getText().trim();
 	}
 
 	public void showErrorDialog(String message) {
